@@ -6,8 +6,8 @@
 - Image: node:16-alpine
 - Container port: 3000
 - Environment variables:
-- NODE_ENV=production
-- PORT=3000
+  - NODE_ENV=production
+  - PORT=3000
 - Labels: app=api, version=v1
 
 ## Service Configuration

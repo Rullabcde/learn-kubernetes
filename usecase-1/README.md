@@ -5,8 +5,6 @@
 - Replicas: 3
 - Image: nginx:1.21
 - Container port: 80
-- Resource limits: CPU 200m, Memory 256Mi
-- Resource requests: CPU 100m, Memory 128Mi
 - Environment variable: ENV=production
 - Labels: app=web, tier=frontend
 
