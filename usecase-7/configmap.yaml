@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: healthcare-config
+  namespace: medical
+
+data:
+  api.properties: server.port=9000\napi.version=v3\nmax.patients=5000
+  db.config: host=postgres-primary.medical.svc\nport=5432\nssl=enabled
+  smtp.host: mail.hospital.com
+  log.level: INFO

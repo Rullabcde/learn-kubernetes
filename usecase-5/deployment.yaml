@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: webapp-stack
+  namespace: webapp
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: webapp
+      tier: frontend
+
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: frontend
+
+    spec:
+      volumes:
+      - name: config-volume
+        configMap:
+          name: web-config
+
+      containers:
+      - name: web-app
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: db.username
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: web-secret
+              key: api.key
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+
+      - name: redis-cache
+        image: redis:6.2-alpine
+        ports:
+        - containerPort: 6379

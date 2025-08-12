@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: healthcare-ingress
+  namespace: medical
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+spec:
+  rules:
+  - host: "api.hospital.local"
+    http:
+      paths:
+      - path: "/health"
+        pathType: Prefix
+        backend:
+          service:
+            name: healthcare-service
+            port:
+              number: 9000

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mysql-database
+  namespace: database
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mysql
+      role: database
+
+  template:
+    metadata:
+      labels:
+        app: mysql
+        role: database
+    spec:
+      containers:
+      - name: database-coba
+        image: mysql:8.0
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: rootpass123
+        - name: MYSQL_DATABASE
+          value: inventory
+        - name: MYSQL_USER
+          value: dbuser

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: web-config
+  namespace: webapp
+
+data:
+  app.properties: debug=true\nlog_level=info\nmax_connections=100
+  database.host: mysql-db.webapp.svc.cluster.local
+  redis.host: redis-cache

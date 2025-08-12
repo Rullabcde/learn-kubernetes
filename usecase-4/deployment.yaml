@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: grafana-dashboard
+  namespace: monitoring
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: grafana
+      component: dashboard
+
+  template:
+    metadata:
+      labels:
+        app: grafana
+        component: dashboard
+
+    spec:
+      containers:
+      - name: grafana-coba
+        image: grafana/grafana:9.0.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          value: "admin123"
+        - name: GF_USERS_ALLOW_SIGN_UP
+          value: "false"

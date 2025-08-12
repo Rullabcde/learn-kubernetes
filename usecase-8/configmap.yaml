@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: tokokita-config
+  namespace: tokokita-prod
+
+data:
+  database.host: postgres.tokokita-prod.svc.cluster.local
+  database.port: 5432
+  redis.host: redis.tokokita-prod.svc.cluster.local
+  api.gateway.url: http://api-gateway:80
+  app.env: production

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: product-service
+  namespace: tokokita-prod
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: product-service
+      tier: backend
+
+  template:
+    metadata:
+      labels:
+        app: product-service
+        tier: backend
+
+    spec:
+      containers:
+      - name: product-app
+        image: openjdk:11-jre
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: tokokita-secret
+              key: db.username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: tokokita-secret
+              key: db.password

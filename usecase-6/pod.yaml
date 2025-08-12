@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: learning-platform
+  namespace: education
+  labels:
+    app: learning
+    version: v2
+    env: prod
+
+spec:
+  volumes:
+  - name: shared-storage
+    emptyDir: {}
+  - name: config-volume
+    configMap:
+      name: learning-config
+
+  containers:
+  - name: learning-api
+    image: openjdk:11-jre
+    ports:
+    - containerPort: 8080
+    env:
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: learning-secret
+          key: postgres.username
+    - name: DB_PASS
+      valueFrom:
+        secretKeyRef:
+          name: learning-secret
+          key: postgres.password
+    - name: JWT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: learning-secret
+          key: jwt.secret
+    - name: KAFKA_BROKERS
+      valueFrom:
+        configMapKeyRef:
+          name: learning-config
+          key: kafka.brokers
+    volumeMounts:
+    - name: config-volume
+      mountPath: /app/config
+    - name: shared-storage
+      mountPath: /app/uploads
+
+  - name: file-processor
+    image: python:3.9-slim
+    volumeMounts:
+    - name: shared-storage
+      mountPath: /shared/files
+
+  - name: fluent-bit
+    image: fluent/fluent-bit:1.9
+    ports:
+    - containerPort: 2020
