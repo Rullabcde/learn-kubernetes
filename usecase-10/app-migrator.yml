@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: app-migrator
+  namespace: dev
+
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: migrator
+        image: ghcr.io/rullabcde/demo/next-migrator:4.0.0
+        command: [ "sh", "-c", "npx prisma migrate deploy && npx prisma db seed" ]
+        envFrom:
+        - configMapRef:
+            name: app-config
+        - secretRef:
+            name: mysql-secret
