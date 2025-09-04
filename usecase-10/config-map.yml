@@ -8,6 +8,5 @@ metadata:
 data:
   DATABASE_URL: "mysql://rullabcd:rullabcd@mysql:3306/coba?connection_limit=10&pool_timeout=20&connect_timeout=60"
   MYSQL_DATABASE: "coba"
-  NEXTAUTH_URL: "https://rullabcd.my.id"
+  NEXTAUTH_URL: "http://demo.rullabcd.com"
   NODE_ENV: "production"
-  APP_VERSION: "4.0.0"

@@ -11,7 +11,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: migrator
-        image: ghcr.io/rullabcde/demo/next-migrator:4.0.0
+        image: ghcr.io/rullabcde/demo/next-migrator:latest
         command: [ "sh", "-c", "npx prisma migrate deploy && npx prisma db seed" ]
         envFrom:
         - configMapRef:

@@ -15,22 +15,9 @@ spec:
       labels:
         app: next-app
     spec:
-      initContainers:
-      - name: wait-migrator
-        image: busybox
-        command:
-        - sh
-        - -c
-        - |
-          echo "Waiting DB Ready..."
-          until nc -z mysql 3306; do
-            echo "DB belum ready, tunggu 10 detik..."
-            sleep 10
-          done
-          echo "Database ready!"
       containers:
       - name: next-app
-        image: ghcr.io/rullabcde/demo/next:4.0.0
+        image: ghcr.io/rullabcde/demo/next:latest
         ports:
         - containerPort: 3000
         envFrom:
@@ -38,15 +25,19 @@ spec:
             name: app-config
         - secretRef:
             name: mysql-secret
-        readinessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 20
-          periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 60
-          periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: next-app-svc
+  namespace: dev
+
+spec:
+  selector:
+    app: next-app
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 3000
+    nodePort: 30000
