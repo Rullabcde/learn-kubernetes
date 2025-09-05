@@ -1,11 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: next-app
   namespace: dev
 
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: next-app
@@ -17,20 +18,71 @@ spec:
     spec:
       containers:
       - name: next-app
-        image: ghcr.io/rullabcde/demo/next:latest
+        image: rullabcd/next:v1.0.0
+        env:
+        - name: DATABASE_URL
+          value: "$(DATABASE_URL_BASE)?connection_limit=10&pool_timeout=20&connect_timeout=60"
+        - name: DATABASE_URL_BASE
+          valueFrom:
+            secretKeyRef:
+              name: next-secrets
+              key: database-url
+        - name: NEXTAUTH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: next-config
+              key: nextauth-url
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: next-config
+              key: node-env
+        - name: NODE_OPTIONS
+          value: "--max_old_space_size=512"
+        - name: UV_THREADPOOL_SIZE
+          value: "128"
+        - name: INSTANCE_ID
+          value: "app-1"
         ports:
         - containerPort: 3000
-        envFrom:
-        - configMapRef:
-            name: app-config
-        - secretRef:
-            name: mysql-secret
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      initContainers:
+      - name: wait-for-migrator
+        image: busybox:1.35
+        command: [ 'sh', '-c' ]
+        args:
+        - |
+          echo "Waiting for migrator to complete..."
+          sleep 30
+          echo "Migrator should be done!"
 ---
 apiVersion: v1
 kind: Service
 
 metadata:
-  name: next-app-svc
+  name: next-app-service
   namespace: dev
 
 spec:
@@ -38,6 +90,28 @@ spec:
     app: next-app
   type: NodePort
   ports:
-  - port: 80
+  - port: 3000
     targetPort: 3000
     nodePort: 30000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: next-app-ingress
+  namespace: dev
+  annotations:
+    kubernetes.io/ingress.class: traefik
+
+spec:
+  rules:
+  - host: coba.domain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: next-app-service
+            port:
+              number: 3000
