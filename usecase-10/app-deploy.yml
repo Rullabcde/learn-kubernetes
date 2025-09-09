@@ -16,6 +16,7 @@ spec:
       labels:
         app: next-app
     spec:
+      hostNetwork: true
       containers:
       - name: next-app
         image: rullabcd/next:v1.0.0

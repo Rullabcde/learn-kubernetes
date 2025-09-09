@@ -12,6 +12,7 @@ spec:
         app: migrator
     spec:
       restartPolicy: Never
+      hostNetwork: true
       containers:
       - name: migrator
         image: rullabcd/next-migrator:v1.0.0
