@@ -6,7 +6,5 @@ metadata:
   namespace: dev
 
 data:
-  mysql-database: "coba"
-  mysql-user: "rullabcd"
   nextauth-url: "http://ip-aws"
   node-env: "production"

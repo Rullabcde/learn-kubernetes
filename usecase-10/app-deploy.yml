@@ -6,7 +6,7 @@ metadata:
   namespace: dev
 
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: next-app
@@ -21,8 +21,6 @@ spec:
         image: rullabcd/next:v1.0.0
         env:
         - name: DATABASE_URL
-          value: "$(DATABASE_URL_BASE)?connection_limit=10&pool_timeout=20&connect_timeout=60"
-        - name: DATABASE_URL_BASE
           valueFrom:
             secretKeyRef:
               name: next-secrets
@@ -39,15 +37,6 @@ spec:
               key: node-env
         ports:
         - containerPort: 3000
-      initContainers:
-      - name: wait-for-migrator
-        image: busybox:1.35
-        command: [ 'sh', '-c' ]
-        args:
-        - |
-          echo "Waiting for migrator to complete..."
-          sleep 30
-          echo "Migrator should be done!"
 ---
 apiVersion: v1
 kind: Service

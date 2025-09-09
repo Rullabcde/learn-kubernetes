@@ -23,14 +23,3 @@ spec:
             secretKeyRef:
               name: next-secrets
               key: database-url
-      initContainers:
-      - name: wait-for-mysql
-        image: busybox:1.35
-        command: [ 'sh', '-c' ]
-        args:
-        - |
-          until nc -z mysql-service 3306; do
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
-          echo "MySQL is ready!"
